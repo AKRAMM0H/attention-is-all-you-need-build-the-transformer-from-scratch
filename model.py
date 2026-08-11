@@ -36,11 +36,11 @@ def build_id_to_token_vocab(token_to_id):
 def encode_sentence_to_ids(sentence, token_to_id, unk_token='<unk>'):
     # TODO: convert whitespace tokens of `sentence` to ids via `token_to_id`, using `unk_token`'s id for OOV
     sentence_str = sentence.split()
-    tokens = []
-    for s in sentence_str:
-        tokens.append(token_to_id.get(s,token_to_id[unk_token]))
+    
+    ids = [token_to_id.get(s, token_to_id[unk_token]) for s in sentence_str]
 
-    return tokens
+
+    return ids
 
 # Step 4 - decode_ids_to_tokens
 def decode_ids_to_tokens(ids, id_to_token):
