@@ -56,10 +56,10 @@ def pad_id_sequence(ids, max_len, pad_id):
     tokens = ids[:max_len]
 
     if len(tokens) < max_len:
-        tokens = tokens + [pad_id] * (max_len - len(tokens))
+        pad_tokens = tokens + [pad_id] * (max_len - len(tokens))
     
 
-    return tokens
+    return pad_tokens
 
 # Step 6 - stack_padded_sequences_to_batch
 import torch
@@ -72,8 +72,16 @@ def stack_padded_sequences_to_batch(padded_sequences):
 
     return batch
 
-# Step 7 - scale_embeddings_by_sqrt_d_model (not yet solved)
-# TODO: implement
+# Step 7 - scale_embeddings_by_sqrt_d_model
+import math
+import torch
+
+def scale_embeddings_by_sqrt_d_model(embeddings, d_model):
+    """Scale a token embedding tensor by sqrt(d_model)."""
+    # TODO: rescale embeddings by sqrt(d_model) as in the original Transformer paper
+    scaled_embeddings = embeddings * math.sqrt(d_model)
+
+    return scaled_embeddings
 
 # Step 8 - compute_positional_div_term (not yet solved)
 # TODO: implement
