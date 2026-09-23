@@ -496,8 +496,53 @@ def decoder_layer_feed_forward_sublayer(y, w1, b1, w2, b2, gamma, beta):
 
     return apply_residual_add_and_norm(y,out_sublayer,gamma,beta)
 
-# Step 46 - assemble_decoder_layer (not yet solved)
-# TODO: implement
+# Step 46 - assemble_decoder_layer
+def assemble_decoder_layer(y, encoder_output, layer_params, num_heads, src_mask, tgt_mask):
+    """Run a full decoder layer: masked self-attention, cross-attention, then FFN.
+
+    layer_params keys (all torch tensors):
+      masked self-attention : w_q_self, w_k_self, w_v_self, w_o_self, self_gamma, self_beta
+      cross-attention       : w_q_cross, w_k_cross, w_v_cross, w_o_cross, cross_gamma, cross_beta
+      feed-forward          : w1, b1, w2, b2, ffn_gamma, ffn_beta
+    """
+    # TODO: chain the three decoder sublayers using params from layer_params.
+    
+    masked_attn_param = {
+      'w_q' : layer_params['w_q_self'],
+      'w_k' : layer_params['w_k_self'],
+      'w_v' : layer_params['w_v_self'],
+      'w_o' : layer_params['w_o_self'],
+      'gamma': layer_params['self_gamma'],
+      'beta': layer_params['self_beta'] 
+    }
+
+    corss_attn_param = {
+      'w_q' : layer_params['w_q_cross'],
+      'w_k' : layer_params['w_k_cross'],
+      'w_v' : layer_params['w_v_cross'],
+      'w_o' : layer_params['w_o_cross'],
+      'gamma' : layer_params['cross_gamma'],
+      'beta': layer_params['cross_beta']
+    }
+
+    ffn_param = {
+      'w1' : layer_params['w1'],
+      'b1' : layer_params['b1'],
+      'w2' : layer_params['w2'],
+      'b2' : layer_params['b2'],
+      'gamma': layer_params['ffn_gamma'],
+      'beta' : layer_params['ffn_beta']
+    }
+
+
+
+    self_out = decoder_layer_masked_self_attention_sublayer(y,num_heads = num_heads , tgt_mask = tgt_mask, **masked_attn_param)
+
+    cross_out = decoder_layer_cross_attention_sublayer(self_out,encoder_output,num_heads = num_heads,src_mask = src_mask,**corss_attn_param)
+
+    ffn_out = decoder_layer_feed_forward_sublayer(cross_out,**ffn_param)
+
+    return ffn_out
 
 # Step 47 - stack_decoder_layers (not yet solved)
 # TODO: implement
