@@ -464,8 +464,14 @@ def stack_encoder_layers(x, encoder_layer_params_list, num_heads, src_mask):
 
     return H
 
-# Step 43 - decoder_layer_masked_self_attention_sublayer (not yet solved)
-# TODO: implement
+# Step 43 - decoder_layer_masked_self_attention_sublayer
+import torch
+
+def decoder_layer_masked_self_attention_sublayer(y, w_q, w_k, w_v, w_o, gamma, beta, num_heads, tgt_mask):
+    # TODO: run masked multi-head self-attention on y and wrap with residual add-and-norm.
+    sublayer_out = assemble_multi_head_attention_forward(y,y,y,w_q,w_k,w_v,w_o,num_heads,tgt_mask)
+
+    return apply_residual_add_and_norm(y,sublayer_out,gamma,beta)
 
 # Step 44 - decoder_layer_cross_attention_sublayer (not yet solved)
 # TODO: implement
