@@ -579,8 +579,52 @@ def apply_log_softmax_over_vocab(logits):
     
     return torch.log_softmax(logits,dim= -1)
 
-# Step 51 - run_transformer_forward (not yet solved)
-# TODO: implement
+# Step 51 - run_transformer_forward
+def run_transformer_forward(src_ids, tgt_ids, model_params, num_heads, pad_id):
+    # TODO: embed src+tgt, add PE, build masks, run encoder/decoder, project to log probs.
+   
+   # --- STEP 1: EMBEDDING & POSITIONAL ENCODING ---
+
+    # 1. Lookup and scale source embeddings
+    src_embed = model_params['token_embedding'][src_ids]
+    scaled_src_embed = scale_embeddings_by_sqrt_d_model(src_embed, src_embed.shape[-1])
+
+    # 2. Lookup and scale target embeddings
+    tgt_embed = model_params['token_embedding'][tgt_ids]
+    scaled_tgt_embed = scale_embeddings_by_sqrt_d_model(tgt_embed, tgt_embed.shape[-1])
+
+    # 3. Add positional encodings to scaled embeddings
+    src_pe = build_sinusoidal_positional_encoding(src_embed.shape[1], src_embed.shape[-1])
+    src_out = add_positional_encoding_to_embeddings(scaled_src_embed, src_pe)
+
+    tgt_pe = build_sinusoidal_positional_encoding(tgt_embed.shape[1], tgt_embed.shape[-1])
+    tgt_out = add_positional_encoding_to_embeddings(scaled_tgt_embed, tgt_pe)
+    
+    # --- STEP 2: MASK GENERATION ---
+
+    # Build source padding mask
+    src_mask = build_padding_mask(src_ids,pad_id)
+    # Build target padding mask and lower-triangular causal mask
+    tgt_pad = build_padding_mask(tgt_ids,pad_id)
+    tgt_causal = build_causal_mask(tgt_embed.shape[1])
+    # Combine target padding and causal masks
+    tgt_mask = combine_padding_and_causal_masks(tgt_pad,tgt_causal)
+    
+    # --- STEP 3: ENCODER & DECODER STACKS ---
+
+    # Process source sequence through the N encoder layers
+    encoder_out = stack_encoder_layers(src_out,model_params['encoder_layers'],num_heads,src_mask)
+    # Process target sequence through the N decoder layers
+    decoder_out = stack_decoder_layers(tgt_out,encoder_out,model_params['decoder_layers'],num_heads,src_mask,tgt_mask)
+    
+    # --- STEP 4: OUTPUT PROJECTION & LOG-SOFTMAX ---
+
+    # Project decoder states to vocabulary logits
+    logits = apply_final_output_projection(decoder_out,model_params['output_projection'])
+    # Compute log probabilities acros
+    log_probs = apply_log_softmax_over_vocab(logits)
+
+    return log_probs
 
 # Step 52 - init_encoder_layer_parameters (not yet solved)
 # TODO: implement
