@@ -776,8 +776,22 @@ def set_confidence_on_gold_tokens(smoothed_distribution, gold_token_ids, confide
     
     return smoothed_dist
 
-# Step 60 - zero_pad_column_and_pad_token_rows (not yet solved)
-# TODO: implement
+# Step 60 - zero_pad_column_and_pad_token_rows
+import torch
+
+def zero_pad_column_and_pad_token_rows(smoothed_distribution, gold_token_ids, pad_id):
+    # TODO: zero the pad column and the rows where the gold token equals pad_id
+    
+    smoothed_dis = smoothed_distribution.clone()
+
+    # column mask
+    smoothed_dis[:,:,pad_id] = 0.0
+
+    row_mask = (gold_token_ids.to(torch.long) == pad_id)
+
+    smoothed_dis[row_mask] = 0.0
+
+    return smoothed_dis
 
 # Step 61 - compute_label_smoothed_kl_loss (not yet solved)
 # TODO: implement
