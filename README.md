@@ -65,7 +65,7 @@ python scaffold.py
 - [x] **53.** init_decoder_layer_parameters
 - [x] **54.** init_embedding_and_projection_parameters
 - [x] **55.** collect_model_parameters_into_list
-- [ ] **56.** shift_targets_right_with_start_token
+- [x] **56.** shift_targets_right_with_start_token
 - [ ] **57.** compute_noam_learning_rate
 - [ ] **58.** build_uniform_smoothing_distribution
 - [ ] **59.** set_confidence_on_gold_tokens
@@ -77,6 +77,7 @@ python scaffold.py
 - [ ] **65.** update_adam_first_moment
 - [ ] **66.** update_adam_second_moment
 - [ ] **67.** apply_adam_bias_correction
+- [ ] **68.** compute_adam_parameter_update
 - [ ] **69.** apply_adam_step_to_all_parameters
 - [ ] **70.** zero_all_parameter_gradients
 - [ ] **71.** compute_batch_training_loss

@@ -729,8 +729,15 @@ def collect_model_parameters_into_list(
 
     return params
 
-# Step 56 - shift_targets_right_with_start_token (not yet solved)
-# TODO: implement
+# Step 56 - shift_targets_right_with_start_token
+def shift_targets_right_with_start_token(target_ids, start_token_id):
+    # TODO: prepend start_token_id and drop the last column so output shape matches target_ids
+    
+    batch_size = target_ids.size(0)
+
+    start_tokens = torch.tensor([[start_token_id]]).expand(batch_size, -1)
+
+    return torch.cat((start_tokens, target_ids[:, :-1]), dim=1)
 
 # Step 57 - compute_noam_learning_rate (not yet solved)
 # TODO: implement
@@ -763,6 +770,9 @@ def collect_model_parameters_into_list(
 # TODO: implement
 
 # Step 67 - apply_adam_bias_correction (not yet solved)
+# TODO: implement
+
+# Step 68 - compute_adam_parameter_update (not yet solved)
 # TODO: implement
 
 # Step 69 - apply_adam_step_to_all_parameters (not yet solved)
