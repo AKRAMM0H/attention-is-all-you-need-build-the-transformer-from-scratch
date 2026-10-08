@@ -937,8 +937,56 @@ def zero_all_parameter_gradients(parameter_list):
         if param.grad is not None:
             param.grad = None
 
-# Step 71 - compute_batch_training_loss (not yet solved)
-# TODO: implement
+# Step 71 - compute_batch_training_loss
+def compute_batch_training_loss(src_batch, tgt_batch, model_params, config):
+    # Shift targets right for teacher forcing
+    decoder_input = shift_targets_right_with_start_token(
+        tgt_batch,
+        config["start_id"],
+    )
+
+    # Full Transformer forward pass
+    logits = run_transformer_forward(
+        src_batch,
+        decoder_input,
+        model_params,
+        config["num_heads"],
+        config['pad_id']
+    )
+
+    # Create smoothed target distribution with the same shape as logits
+    target_distribution = build_uniform_smoothing_distribution(
+        logits.shape,
+        config["vocab_size"],
+        config["smoothing"],
+    )
+
+    # Give the gold token its confidence
+    target_distribution = set_confidence_on_gold_tokens(
+        target_distribution,
+        tgt_batch,
+        1.0 - config["smoothing"],
+    )
+
+    # Remove padding from the distribution
+    target_distribution = zero_pad_column_and_pad_token_rows(
+        target_distribution,
+        tgt_batch,
+        config["pad_id"],
+    )
+
+    # KL loss for every token
+    token_losses = compute_label_smoothed_kl_loss(
+        logits,
+        target_distribution,
+    )
+
+    # Average only over non-padding tokens
+    return average_loss_over_non_pad_tokens(
+        token_losses,
+        tgt_batch,
+        config["pad_id"],
+    )
 
 # Step 72 - run_training_step_with_backprop (not yet solved)
 # TODO: implement
