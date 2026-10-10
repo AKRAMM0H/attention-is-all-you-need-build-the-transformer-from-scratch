@@ -1143,17 +1143,14 @@ def mark_finished_beams(token_ids, finished_flags, end_token_id):
 
 # Step 80 - select_best_finished_beam
 def select_best_finished_beam(finished_sequences, finished_scores, alpha):
-    # Compute the length penalty for each finished sequence
-    lp = compute_length_penalty(finished_sequences, alpha)
+    lengths = torch.tensor([len(seq) for seq in finished_sequences])
+    penalties = compute_length_penalty(lengths, alpha)
+    normalized_scores = torch.tensor(finished_scores) / penalties
 
-    # Divide cumulative log-probabilities by the length penalty
-    penalized_scores = finished_scores / lp
-
-    # Find the index of the highest penalized score
-    max_score_idx = penalized_scores.argmax(-1)
+    best_idx = torch.argmax(normalized_scores)
 
     return {
-        "sequence": finished_sequences[max_score_idx],
-        "score": penalized_scores[max_score_idx]  # Return the winning penalized score
+        "sequence": finished_sequences[best_idx],
+        "score": float(normalized_scores[best_idx])
     }
 
