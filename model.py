@@ -1073,8 +1073,18 @@ def run_training_loop_for_steps(
 
     return losses
 
-# Step 74 - pick_next_token_by_argmax (not yet solved)
-# TODO: implement
+# Step 74 - pick_next_token_by_argmax
+import torch
+
+def pick_next_token_by_argmax(final_step_logits):
+    """Greedy: return argmax token id per batch row.
+
+    final_step_logits: FloatTensor of shape (batch, vocab_size)
+    returns: LongTensor of shape (batch,)
+    """
+    # TODO: pick the next greedy token id by taking the argmax over the vocab axis
+    
+    return final_step_logits.argmax(-1)
 
 # Step 75 - compute_length_penalty (not yet solved)
 # TODO: implement
